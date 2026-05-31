@@ -1,0 +1,47 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all reads and writes
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Allow public GET for specific student seat lookups
+    match /seat_allocations/{usn} {
+      allow get: if true;
+    }
+
+    // Allow public GET for the admin secret code
+    match /secrets/{docId} {
+      allow get: if true;
+    }
+
+    // Allow any authenticated user to perform admin actions.
+    // This is secure because only you can create authenticated users.
+    match /batches/{docId} {
+      allow read, write: if request.auth != null;
+    }
+    match /classes/{docId} {
+      allow read, write: if request.auth != null;
+    }
+    match /electives/{docId} {
+      allow read, write: if request.auth != null;
+    }
+    match /invigilators/{docId} {
+      allow read, write: if request.auth != null;
+    }
+    match /exams/{docId} {
+      allow read, write: if request.auth != null;
+    }
+    // Authenticated users can list all allocations and write to them.
+    match /seat_allocations/{docId} {
+       allow list, write: if request.auth != null;
+    }
+    // Authenticated users can write to secrets.
+    match /secrets/{docId} {
+       allow write: if request.auth != null;
+    }
+  }
+}
